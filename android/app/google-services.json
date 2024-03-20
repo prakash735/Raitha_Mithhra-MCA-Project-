@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1036990981981",
+    "project_id": "raitha-mithra-e2eed",
+    "storage_bucket": "raitha-mithra-e2eed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1036990981981:android:40dda2acc72535ee2caab4",
+        "android_client_info": {
+          "package_name": "com.rithamithra.raithamithra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVgITv2RnVM7-x-w049_iF5AbCuro616Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
