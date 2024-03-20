@@ -16,6 +16,7 @@ class _MorePageState extends State<MorePage> {
   final String farmerID = '123456'; // Example ID, replace with actual ID
 
   late Map<String, dynamic> _userData = {};
+  int starRating = 0;
 
   var userData;
 
@@ -29,10 +30,12 @@ class _MorePageState extends State<MorePage> {
   Future<void> checkAndFetchData() async {
     try {
       // Reference to the Firestore collection
-      CollectionReference users = FirebaseFirestore.instance.collection('users');
+      CollectionReference users = FirebaseFirestore.instance.collection(
+          'users');
       // Query to check if the phone number exists in any document
       QuerySnapshot querySnapshot = await users
-          .where('phoneNumber', isEqualTo: int.tryParse(PhoneOTP.userPhoneNumber))
+          .where(
+          'phoneNumber', isEqualTo: int.tryParse(PhoneOTP.userPhoneNumber))
           .get();
       print(querySnapshot.docs);
       if (querySnapshot.docs.isNotEmpty) {
@@ -43,7 +46,8 @@ class _MorePageState extends State<MorePage> {
         var userData = querySnapshot.docs.first.data();
         setState(() {
           PhoneOTP.gotFirebaseUserData = querySnapshot.docs.first.data();
-          _userData = userData as Map<String, dynamic>; // Store the fetched user data
+          _userData =
+          userData as Map<String, dynamic>; // Store the fetched user data
           // SmsOTP_Number_Page.gotUserIDFireBaseData = querySnapshot.docs.first.id;
         });
         print("User Data got From Firebase : $userData");
@@ -69,7 +73,10 @@ class _MorePageState extends State<MorePage> {
             child: Container(
               color: Color(0xffFFF8E2),
               height: 24,
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
             ),
           ),
           Padding(
@@ -82,7 +89,10 @@ class _MorePageState extends State<MorePage> {
                     Container(
                       color: Color(0xffFFF8E2),
                       height: 170,
-                      width: MediaQuery.of(context).size.width,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -123,15 +133,22 @@ class _MorePageState extends State<MorePage> {
                                         SizedBox(width: 10),
                                         GestureDetector(
                                           onTap: () {
-                                            FlutterClipboard.copy(farmerID); // Copy the Farmer ID to clipboard
-                                            ScaffoldMessenger.of(context).showSnackBar(
+                                            FlutterClipboard.copy(
+                                                farmerID); // Copy the Farmer ID to clipboard
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
                                               SnackBar(
-                                                content: Text('Copied to clipboard'), // Display a message
-                                                duration: Duration(seconds: 1), // Adjust duration as needed
+                                                content: Text(
+                                                    'Copied to clipboard'),
+                                                // Display a message
+                                                duration: Duration(
+                                                    seconds: 1), // Adjust duration as needed
                                               ),
                                             );
                                           },
-                                          child: Icon(Icons.copy, color: Colors.black, size: 20), // Decrease icon size
+                                          child: Icon(
+                                              Icons.copy, color: Colors.black,
+                                              size: 20), // Decrease icon size
                                         ),
                                       ],
                                     ),
@@ -148,7 +165,9 @@ class _MorePageState extends State<MorePage> {
                                               color: Colors.black87,
                                             ),
                                           ),
-                                          Icon(Icons.arrow_forward_ios, size: 12, color: Colors.blue),
+                                          Icon(
+                                              Icons.arrow_forward_ios, size: 12,
+                                              color: Colors.blue),
                                         ],
                                       ),
                                     ),
@@ -166,9 +185,12 @@ class _MorePageState extends State<MorePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          buildRow('Land OverView', Icons.assignment_turned_in_outlined),
-                          SizedBox(height: 15), // Increased vertical gap between rows
-                          buildRow('Agreement Statement', Icons.agriculture_sharp),
+                          buildRow('Land OverView',
+                              Icons.assignment_turned_in_outlined),
+                          SizedBox(height: 15),
+                          // Increased vertical gap between rows
+                          buildRow(
+                              'Agreement Statement', Icons.agriculture_sharp),
                           SizedBox(height: 15),
                           buildRow('All Investors', Icons.people),
                           SizedBox(height: 15),
@@ -178,9 +200,10 @@ class _MorePageState extends State<MorePage> {
                           SizedBox(height: 15),
                           buildRow('About Us', Icons.info),
                           SizedBox(height: 15),
-                          buildRow('Rate Us', Icons.star),
+                          buildRateUsRow(),
                           SizedBox(height: 15),
-                          buildLogoutRow(context), // Logout row
+                          buildLogoutRow(context),
+                          // Logout row
                           SizedBox(height: 15),
                         ],
                       ),
@@ -266,7 +289,8 @@ class _MorePageState extends State<MorePage> {
                   onPressed: () {
                     // Perform logout action
                     // For example, you can navigate to the login screen and clear any user authentication data
-                    Navigator.pushNamedAndRemoveUntil(context, '_utils/splashscreen', (route) => true);
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, '_utils/splashscreen', (route) => true);
                   },
                 ),
               ],
@@ -293,5 +317,86 @@ class _MorePageState extends State<MorePage> {
         ),
       ),
     );
+  }
+
+  Widget buildRateUsRow() {
+    return GestureDetector(
+      onTap: () {
+        // Show dialog for rating
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // Initialize star rating to 0 when the dialog is shown
+            starRating = 0;
+            return AlertDialog(
+              title: Text("Rate Us"),
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  buildStarIcon(Icons.star_border, 1),
+                  buildStarIcon(Icons.star_border, 2),
+                  buildStarIcon(Icons.star_border, 3),
+                  buildStarIcon(Icons.star_border, 4),
+                  buildStarIcon(Icons.star_border, 5),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: Text("Submit"),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close dialog
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Thank You for Your valuable feedback"),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            Icon(Icons.star, size: 20, color: Colors.black), // Star icon
+            SizedBox(width: 20), // Increased gap between icon and text
+            Text(
+              'Rate Us',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Spacer(),
+            Icon(Icons.arrow_forward_ios, size: 20), // Arrow icon
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildStarIcon(IconData iconData, int index) {
+    return GestureDetector(
+      onTap: () {
+        // Handle star rating
+        setState(() {
+          starRating = index;
+        });
+      },
+      child: Icon(iconData, size: 40,
+          color: index <= starRating ? Colors.orange : Colors
+              .grey), // Star icon
+    );
+  }
+
+
+  void main() {
+    runApp(MaterialApp(
+      home: MorePage(),
+    ));
   }
 }
