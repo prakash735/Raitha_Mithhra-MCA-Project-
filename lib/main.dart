@@ -32,9 +32,9 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Ritha Mithra',
-  home: const SplashScreen(),
+  //home: const SplashScreen(),
   //     home: RegPage(),
-  //   home: FarmerPage(),
+     home: FarmerPage(),
     );
   }
 }

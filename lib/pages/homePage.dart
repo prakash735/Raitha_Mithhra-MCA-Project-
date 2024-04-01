@@ -173,8 +173,8 @@ class _FarmerPageState extends State<FarmerPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  width: 430,
-                  height: 200,
+                  width: 350,
+                  height: 150,
                   color: Colors.grey,
                   child: _controller.value.isInitialized
                       ? AspectRatio(
@@ -200,7 +200,7 @@ class _FarmerPageState extends State<FarmerPage> {
                   children: [
                     Container(
                       width: 400,
-                      height: 160,
+                      height: 150,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage('assets/farmerland.png'),
@@ -250,8 +250,8 @@ class _FarmerPageState extends State<FarmerPage> {
               top: 100,
               left: 200, // Adjust position as needed
               child: Container(
-                width: 150, // Adjust width as needed
-                height: 150, // Adjust height as needed
+                width: 100, // Adjust width as needed
+                height: 100, // Adjust height as needed
                 child: Image.asset('assets/select1.png'), // Replace 'your_image.png' with your PNG image asset
               ),
             ),
@@ -260,8 +260,8 @@ class _FarmerPageState extends State<FarmerPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  width: 410,
-                  height: 200,
+                  width: 350,
+                  height: 150,
                   color: Colors.grey,
                 ),
               ],

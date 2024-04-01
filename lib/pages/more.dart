@@ -1,7 +1,7 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import for Clipboard
-import 'package:clipboard/clipboard.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../auth/phone.dart';
 
@@ -18,8 +18,6 @@ class _MorePageState extends State<MorePage> {
   late Map<String, dynamic> _userData = {};
   int starRating = 0;
 
-  var userData;
-
   @override
   void initState() {
     super.initState();
@@ -30,12 +28,11 @@ class _MorePageState extends State<MorePage> {
   Future<void> checkAndFetchData() async {
     try {
       // Reference to the Firestore collection
-      CollectionReference users = FirebaseFirestore.instance.collection(
-          'users');
+      CollectionReference users =
+      FirebaseFirestore.instance.collection('users');
       // Query to check if the phone number exists in any document
       QuerySnapshot querySnapshot = await users
-          .where(
-          'phoneNumber', isEqualTo: int.tryParse(PhoneOTP.userPhoneNumber))
+          .where('phoneNumber', isEqualTo: int.tryParse(PhoneOTP.userPhoneNumber))
           .get();
       print(querySnapshot.docs);
       if (querySnapshot.docs.isNotEmpty) {
@@ -73,14 +70,11 @@ class _MorePageState extends State<MorePage> {
             child: Container(
               color: Color(0xffFFF8E2),
               height: 24,
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              width: MediaQuery.of(context).size.width,
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 24),
+            padding: EdgeInsets.only(top: 14),
             child: Scaffold(
               body: SingleChildScrollView(
                 child: Column(
@@ -89,25 +83,36 @@ class _MorePageState extends State<MorePage> {
                     Container(
                       color: Color(0xffFFF8E2),
                       height: 170,
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
+                      width: MediaQuery.of(context).size.width,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(18.0),
                             child: Row(
                               children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.grey,
-                                  radius: 60,
-                                  child: IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(Icons.supervised_user_circle),
-                                    color: Colors.white,
-                                  ),
+                                Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundColor: Colors.grey,
+                                      radius: 60,
+                                    ),
+                                    Positioned(
+                                      top: 80,
+                                      left: 70,
+                                      child: Transform.scale(
+                                        scale: 1.5, // Adjust this value to increase or decrease the size
+                                        child: IconButton(
+                                          onPressed: () {
+                                            _showImagePicker(context);
+                                          },
+                                          icon: Icon(Icons.camera_enhance_outlined),
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(width: 16),
                                 Column(
@@ -126,7 +131,7 @@ class _MorePageState extends State<MorePage> {
                                         Text(
                                           'Farmer ID: $farmerID',
                                           style: TextStyle(
-                                            fontSize: 18,
+                                            fontSize: 16,
                                             color: Colors.black,
                                           ),
                                         ),
@@ -388,15 +393,53 @@ class _MorePageState extends State<MorePage> {
         });
       },
       child: Icon(iconData, size: 40,
-          color: index <= starRating ? Colors.orange : Colors
-              .grey), // Star icon
+          color: index <= starRating ? Colors.orange : Colors.grey), // Star icon
     );
   }
 
-
-  void main() {
-    runApp(MaterialApp(
-      home: MorePage(),
-    ));
+  Future<void> _showImagePicker(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext bc) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Photo Library'),
+                onTap: () {
+                  _pickImage(ImageSource.gallery);
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_camera),
+                title: Text('Camera'),
+                onTap: () {
+                  _pickImage(ImageSource.camera);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
+
+  void _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      // Do something with the picked image file
+      // For example, you can upload it or display it
+    }
+  }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: MorePage(),
+  ));
 }
