@@ -4,7 +4,8 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:hive/hive.dart';
-import 'package:raithamithra/pages/homePage.dart';
+import 'package:raithamithra/pages/farmerPage.dart';
+import 'package:uuid/uuid.dart';
 
 class RegPage extends StatefulWidget {
   final String? phoneNumber;
@@ -19,6 +20,7 @@ class _RegPageState extends State<RegPage> {
   TextEditingController fullNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController adharNumberController = TextEditingController();
   String? _defaultRole;
 
   final _formKey = GlobalKey<FormState>();
@@ -151,6 +153,24 @@ class _RegPageState extends State<RegPage> {
                     ],
                   ),
                   SizedBox(height: 20),
+                  Text(
+                    'Adhar Number:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  TextFormField(
+                    controller: adharNumberController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your adhar number';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Enter your adhar number',
+                    ),
+                  ),
+
+                  SizedBox(height: 20),
                   MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: ElevatedButton(
@@ -167,7 +187,7 @@ class _RegPageState extends State<RegPage> {
                           register();
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => FarmerPage()), // Navigate to FarmerPage and replace current route
+                            MaterialPageRoute(builder: (context) => FarmerHome()), // Navigate to FarmerPage and replace current route
                           );
                         } else {
                           _scrollToFirstError();
@@ -197,13 +217,18 @@ class _RegPageState extends State<RegPage> {
     String emailID = emailController.text.isEmpty ? '' : emailController.text;
     String phoneNumber = phoneNumberController.text;
     String defaultRole = _defaultRole ?? '';
-
+    int adharnumber = int.parse(adharNumberController.text);
+    var uuid = Uuid();
+    var docID = uuid.v4();
     // Store the registration data in Firestore
-    FirebaseFirestore.instance.collection('users').add({
+    FirebaseFirestore.instance.collection('users').doc(docID).set({
       'fullName': fullName,
       'emailID': emailID,
       'phoneNumber': int.tryParse(phoneNumber),
       'defaultRole': defaultRole,
+      'adharnumber':adharnumber,
+      'userUUID':docID,
+      'profileUrl':'https://firebasestorage.googleapis.com/v0/b/raitha-mithra-e2eed.appspot.com/o/profilePic%2Fuser.jpeg?alt=media&token=c814973f-42b8-4cb9-9b71-eaf589c36a25'
     }).then((value) async {
       // Data added successfully
       await storeData();
@@ -220,7 +245,7 @@ class _RegPageState extends State<RegPage> {
     await Hive.openBox('userData');
     var box = Hive.box('userData');
     await box.put('phoneNumber',  phoneNumberController.text);
-    Get.offAll(()=>const FarmerPage());
+    Get.offAll(()=>const FarmerHome());
   }
 
   void _scrollToFirstError() {

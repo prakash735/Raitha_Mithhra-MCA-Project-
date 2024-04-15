@@ -6,8 +6,11 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:hive/hive.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:raithamithra/auth/phone.dart';
-import 'package:raithamithra/pages/homePage.dart';
+import 'package:raithamithra/pages/farmerPage.dart';
+import 'package:raithamithra/pages/invetorPage.dart';
 import 'package:raithamithra/pages/registration.dart';
+
+import '../pages/adminPage.dart';
 
 class OTPVerify extends StatefulWidget {
   const OTPVerify({super.key});
@@ -37,12 +40,12 @@ class _OTPVerifyState extends State<OTPVerify> {
     }else{
       storeDataLocalOfUser();
       if(PhoneOTP.gotFirebaseUserData['defaultRole']=='admin'){
-        Get.offAll(const FarmerPage());
+        Get.offAll(const AdminHome());
       }
       if(PhoneOTP.gotFirebaseUserData['defaultRole']=='farmer'){
-      Get.offAll(const FarmerPage());
+      Get.offAll(const FarmerHome());
       }else{
-        print('Go to New investor');
+        Get.offAll(const InvestorHome());
       }
     }
 

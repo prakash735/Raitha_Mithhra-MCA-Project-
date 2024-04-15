@@ -4,8 +4,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:hive/hive.dart';
 import 'package:raithamithra/auth/phone.dart';
 import 'package:lottie/lottie.dart';
-import 'package:raithamithra/pages/homePage.dart';
-
+import 'package:raithamithra/pages/farmerPage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> getStoreDataLocalOfUser() async {
     await Hive.openBox('userData');
     var box = Hive.box('userData');
-      // await box.put('phoneNumber',  '');
+    // await box.put('phoneNumber',  '');
     var phoneNumber = box.get('phoneNumber');
     setState(() {
       PhoneOTP.userPhoneNumber = phoneNumber;
@@ -40,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if(phoneNumber.toString().isEmpty){
       Get.offAll(()=>const PhoneOTP());
     }else{
-      Get.offAll(()=>const FarmerPage());
+      Get.offAll(()=>const FarmerHome());
     }
   }
 

@@ -19,6 +19,7 @@ class PhoneOTP extends StatefulWidget {
   static var userPhoneNumber;
   static int smsGeneratedOTP = 0;
   static var gotFirebaseUserData;
+  static String useUUIDLocal ='';
 
   @override
   State<PhoneOTP> createState() => _PhoneOTPState();
