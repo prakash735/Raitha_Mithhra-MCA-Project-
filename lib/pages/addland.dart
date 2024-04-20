@@ -69,7 +69,7 @@ class _AddLandState extends State<AddLand> {
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Icon(Icons.account_circle),
+
             ),
           ),
         ],
@@ -303,6 +303,9 @@ class _AddLandState extends State<AddLand> {
       // Reset form fields after submission
       _resetForm();
 
+      // Show a dialog box and navigate back to investor page
+      _showSuccessDialogAndNavigateBack();
+
       // Display a success message
       Fluttertoast.showToast(
           msg: "Data saved successfully!",
@@ -324,6 +327,28 @@ class _AddLandState extends State<AddLand> {
           textColor: Colors.white,
           fontSize: 16.0);
     }
+  }
+
+
+  void _showSuccessDialogAndNavigateBack() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Success'),
+          content: Text('Your organization details have been submitted successfully. Your land needs some time to get approved. Please wait for 24 hours.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close the dialogue box and navigate back
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _resetForm() {

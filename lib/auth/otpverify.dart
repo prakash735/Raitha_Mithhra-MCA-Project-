@@ -44,7 +44,8 @@ class _OTPVerifyState extends State<OTPVerify> {
       }
       if(PhoneOTP.gotFirebaseUserData['defaultRole']=='farmer'){
       Get.offAll(const FarmerHome());
-      }else{
+      }
+      if(PhoneOTP.gotFirebaseUserData['defaultRole']=='investor'){
         Get.offAll(const InvestorHome());
       }
     }

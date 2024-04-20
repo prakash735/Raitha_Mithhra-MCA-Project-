@@ -56,6 +56,8 @@ dependencies:
   another_flushbar: ^1.12.30
   uuid: ^4.4.0
   firebase_storage: ^11.7.1
+  fl_chart: ^0.67.0
+
 
 dev_dependencies:
   flutter_test:

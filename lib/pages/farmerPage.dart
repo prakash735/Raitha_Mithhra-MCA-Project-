@@ -1,18 +1,17 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:raithamithra/pages/investorlist.dart';
 import 'package:raithamithra/pages/profile.dart';
+import 'package:raithamithra/pages/addland.dart';
+import 'package:raithamithra/pages/farmeragreement.dart';
+import 'package:raithamithra/pages/myland.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:hive/hive.dart';
 import '../auth/phone.dart';
-import 'addland.dart';
-import 'farmeragreement.dart';
-import 'myland.dart';
 
 class FarmerHome extends StatefulWidget {
   const FarmerHome({Key? key}) : super(key: key);
-
 
   @override
   State<FarmerHome> createState() => _FarmerHomeState();
@@ -29,27 +28,25 @@ class _FarmerHomeState extends State<FarmerHome> {
     'assets/image7.jpeg',
     'assets/image10.jpeg',
   ];
+
   @override
   void initState() {
     super.initState();
     getDataLocalOfUser();
-
   }
-
 
   Future<void> getDataLocalOfUser() async {
     await Hive.openBox('userData');
     var box = Hive.box('userData');
     var phoneNumber = box.get('phoneNumber');
     setState(() {
-      PhoneOTP.userPhoneNumber= phoneNumber;
+      PhoneOTP.userPhoneNumber = phoneNumber;
     });
     getUserData();
     print('Hive Stored Phone Number in smsOTP Number Page in Former Page: $phoneNumber');
   }
 
   void getUserData() async {
-
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('users')
@@ -60,7 +57,7 @@ class _FarmerHomeState extends State<FarmerHome> {
         for (DocumentSnapshot doc in querySnapshot.docs) {
           setState(() {
             gotUserData = doc;
-            PhoneOTP.useUUIDLocal= gotUserData['userUUID'];
+            PhoneOTP.useUUIDLocal = gotUserData['userUUID'];
             isLandDataAvl = true;
           });
           print(doc.data());
@@ -93,10 +90,14 @@ class _FarmerHomeState extends State<FarmerHome> {
     }
   }
 
+  void navigateBackToInvestorPage(BuildContext context) {
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xffFFF8E2),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         actions: [
           InkWell(
@@ -123,12 +124,11 @@ class _FarmerHomeState extends State<FarmerHome> {
         ),
         backgroundColor: Color(0xffC4AB62),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 20,),
             SizedBox(
               height: 200,
               child: CarouselSlider(
@@ -149,11 +149,8 @@ class _FarmerHomeState extends State<FarmerHome> {
                         margin: EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15.0),
-                          child: Image.asset(
-                            imageUrl,
+                          image: DecorationImage(
+                            image: AssetImage(imageUrl),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -162,27 +159,21 @@ class _FarmerHomeState extends State<FarmerHome> {
                   );
                 }).toList(),
               ),
-
             ),
-            SizedBox(height: 20),
-            Text(
-              'My Assets',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: IconButton(
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'My Assets',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black87),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildFeatureButton(
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -191,20 +182,10 @@ class _FarmerHomeState extends State<FarmerHome> {
                             ),
                           );
                         },
-                        icon: Column(
-                          children: [
-                            Icon(
-                              CupertinoIcons.news_solid,
-                              color: Color(0xff575756),
-                              size: 40,
-                            ),
-                            Text('Add Land'),
-                          ],
-                        ),
+                        icon: CupertinoIcons.news_solid,
+                        label: 'Add Land',
                       ),
-                    ),
-                    Expanded(
-                      child: IconButton(
+                      _buildFeatureButton(
                         onPressed: () {
                           Navigator.push(
                             context,
@@ -213,118 +194,150 @@ class _FarmerHomeState extends State<FarmerHome> {
                             ),
                           );
                         },
-                        icon: Column(
-                          children: [
-                            Icon(
-                              CupertinoIcons.doc_checkmark_fill,
-                              color: Color(0xff575756),
-                              size: 40,
+                        icon: CupertinoIcons.doc_checkmark_fill,
+                        label: 'My Lands',
+                      ),
+                      _buildFeatureButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FarmerAgreement(),
                             ),
-                            Text('My Lands'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: IconButton(
-                        onPressed: () { Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FarmerAgreement(),
-                          ),
-                        );},
-                        icon: Column(
-                          children: [
-                            Icon(
-                              Icons.fiber_dvr,
-                              color: Color(0xff575756),
-                              size: 40,
-                            ),
-                            Text('My Score'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Investors',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => InvestorList(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'see more>>',
-                    style: TextStyle(fontSize: 10),
-                  ),
-                )
-              ],
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .where('defaultrole', isEqualTo: 'investor')
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      var investors = snapshot.data!.docs;
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: investors.length,
-                        itemBuilder: (context, index) {
-                          var fullName = investors[index]['fullName'];
-                          var profileUrl = investors[index]['profileUrl'];
-                          return Column(
-                            children: [
-                            CircleAvatar(
-                            radius: 60,
-                            backgroundImage: profileUrl != null
-                                ? NetworkImage(profileUrl)
-                                : AssetImage('assets/profile_placeholder.jpg') as ImageProvider,
-                          ),
-
-                              SizedBox(height: 5),
-                              Text(
-                                fullName,
-                                style: TextStyle(fontSize: 12),
-                              ),
-                            ],
                           );
                         },
-                      );
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
+                        icon: Icons.handshake,
+                        label: 'Agreements',
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Investors',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black87),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => InvestorList(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'See more>',
+                          style: TextStyle(fontSize: 12, color: Colors.blue),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  _buildInvestorsList(),
+                ],
               ),
             ),
           ],
         ),
+
+      ),
+    );
+  }
+
+  Widget _buildFeatureButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+    required String label,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              color: Color(0xff575756),
+              size: 40,
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            label,
+            style: TextStyle(fontSize: 14, color: Colors.black87),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInvestorsList() {
+    return Container(
+      height: 120,
+      child: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .where('defaultRole', isEqualTo: 'investor')
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            var investors = snapshot.data!.docs;
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: investors.length,
+              itemBuilder: (context, index) {
+                var fullName = investors[index]['fullName'];
+                var profileUrl = investors[index]['profileUrl'];
+                return Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: Column(
+                    children: [
+                      Hero(
+                        tag: 'investor_$index',
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundImage: profileUrl != null
+                              ? NetworkImage(profileUrl)
+                              : AssetImage(
+                              'assets/profile_placeholder.jpg') as ImageProvider,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        fullName.length > 10
+                            ? '${fullName.substring(0, 10)}...'
+                            : fullName,
+                        style: TextStyle(fontSize: 12, color: Colors.black87),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }

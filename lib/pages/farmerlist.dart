@@ -78,7 +78,10 @@ class _FarmerlistState extends State<Farmerlist> {
                           style:  TextStyle(color: Colors.grey[700]),
                         ),
                         SizedBox(height: 2),
+                        Text(  'Farmer name: ${investor['fname']}',
 
+                          style:  TextStyle(color: Colors.grey[700]),
+                        ),
 
                         SizedBox(height: 4),
                       ],
@@ -116,7 +119,7 @@ class _FarmerlistState extends State<Farmerlist> {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('assets')
           .where('isCompany', isEqualTo: false)
-          .where('status', isEqualTo: 'approved')// Adjust the query to fetch based on 'entity' field
+          .where('status', isEqualTo: 'approved')
           .get();
 
       List<Map<String, dynamic>> investors = [];
@@ -124,17 +127,28 @@ class _FarmerlistState extends State<Farmerlist> {
       for (var doc in querySnapshot.docs) {
         var data = doc.data() as Map<String, dynamic>;
         if (data['isCompany'] == false) {
-          investors.add({
-            'location': data['location']['address1']?? '',
-            'location1': data['location']['address2']?? '',
-            'city': data['location']['city']?? '',
-            'district': data['location']['district']?? '',
-            'state': data['location']['state']?? '',
-            'entity1': data['land']['ownername'] ?? '',
-            'entity': data['land']['landsize'] ?? '',
-            'userAssetUUID':doc.id,
-          'userUUID':data['userUUID']?? '',
-          });
+          var userUUID = data['userUUID'];
+          var userSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userUUID)
+              .get();
+
+          if (userSnapshot.exists) {
+            var userData = userSnapshot.data() as Map<String, dynamic>;
+            var farmerName = userData['fullName'] ?? '';
+            investors.add({
+              'location': data['location']['address1'] ?? '',
+              'location1': data['location']['address2'] ?? '',
+              'city': data['location']['city'] ?? '',
+              'district': data['location']['district'] ?? '',
+              'state': data['location']['state'] ?? '',
+              'fname': farmerName,
+              'entity1': data['land']['ownername'] ?? '',
+              'entity': data['land']['landsize'] ?? '',
+              'userAssetUUID': doc.id,
+              'userUUID': data['userUUID'] ?? '',
+            });
+          }
         }
       }
 
@@ -143,6 +157,7 @@ class _FarmerlistState extends State<Farmerlist> {
       throw error;
     }
   }
+
 }
 
 

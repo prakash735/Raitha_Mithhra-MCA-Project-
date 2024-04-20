@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../auth/phone.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
@@ -24,7 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('phoneNumber', isEqualTo: 7353119595)
+          .where('phoneNumber', isEqualTo: int.parse(PhoneOTP.userPhoneNumber))
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {

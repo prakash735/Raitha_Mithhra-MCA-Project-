@@ -16,6 +16,8 @@ import 'package:raithamithra/pages/settingspage.dart';
 import '../auth/phone.dart';
 
 class ProfilePage extends StatefulWidget {
+  static var userPhoneNumber;
+
   const ProfilePage({Key? key});
 
   @override
@@ -26,18 +28,22 @@ class _ProfilePageState extends State<ProfilePage> {
   var gotUserData;
   String? profileUrl; // Holds the profile image URL
   String? fullName; // Holds the full name
+  String? role; // Holds the full name
+
 
   @override
   void initState() {
     super.initState();
-    getUserData();
+    getStoreDataLocalOfUser();
+
   }
+
 
   void getUserData() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('phoneNumber', isEqualTo: PhoneOTP.userPhoneNumber)
+          .where('phoneNumber', isEqualTo: int.parse(ProfilePage.userPhoneNumber) )
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
@@ -47,6 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
             PhoneOTP.useUUIDLocal= gotUserData['userUUID'];
             profileUrl = doc['profileUrl'] as String?; // Retrieve profile image URL
             fullName = doc['fullName'] as String?; // Retrieve full name
+            role = doc['defaultRole'] as String?; // Retrieve full name
           });
           getAssetData();
         }
@@ -89,12 +96,29 @@ class _ProfilePageState extends State<ProfilePage> {
       print('No image selected.');
     }
   }
+
+
   Future<void> lougout() async {
     await Hive.openBox('userData');
     var box = Hive.box('userData');
     await box.put('phoneNumber',  '');
       Get.offAll(()=>const SplashScreen());
   }
+
+
+  Future<void> getStoreDataLocalOfUser() async {
+    await Hive.openBox('userData');
+    var box = Hive.box('userData');
+    // await box.put('phoneNumber',  '');
+    var phoneNumber = box.get('phoneNumber');
+    setState(() {
+      ProfilePage.userPhoneNumber = phoneNumber;
+    });
+    getUserData();
+  }
+
+
+
   // Function to upload image to Firebase Storage
   Future<void> uploadImage(File imageFile) async {
     try {
@@ -111,7 +135,6 @@ class _ProfilePageState extends State<ProfilePage> {
       print('Error uploading image: $error');
     }
   }
-
 
 
   // Function to update profile image URL in Firestore
@@ -187,11 +210,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
+
+              SizedBox(height: 10),
               Text(
-                '',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                role ?? 'Loading...', // Display the full name or 'Loading...' if not fetched yet
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               // Enhanced UI for options
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -96,6 +96,7 @@ class _MyOrgState extends State<MyOrg> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('assets')
+          .where('status', isEqualTo: 'approved')
           .where('isCompany', isEqualTo: true).where('userUUID', isEqualTo: PhoneOTP.useUUIDLocal) // Adjust the query to fetch based on 'entity' field
           .get();
 

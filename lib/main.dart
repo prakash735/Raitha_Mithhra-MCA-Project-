@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:raithamithra/_utils/splashscreen.dart';
 import 'package:raithamithra/pages/aboutus.dart';
 import 'package:raithamithra/pages/adminPage.dart';
+import 'package:raithamithra/pages/agreement.dart';
 import 'package:raithamithra/pages/farmerPage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:raithamithra/pages/invetorPage.dart';
@@ -41,10 +42,11 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Ritha Mithra',
-   home: const SplashScreen(),
-   //    home: AdminHome(),
+      home: const SplashScreen(),
+     // home: AdminHome(),
    // home: FarmerHome(),
    //    home: InvestorHome(),
+   //    home: FamAgreement(),
     );
   }
 }

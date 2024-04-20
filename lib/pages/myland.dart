@@ -98,6 +98,7 @@ class _MyLandState extends State<MyLand> {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('assets')
+          .where('status', isEqualTo: 'approved')
           .where('isCompany', isEqualTo: false).where('userUUID', isEqualTo: PhoneOTP.useUUIDLocal)
           .get();
 

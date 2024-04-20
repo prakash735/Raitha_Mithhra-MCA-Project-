@@ -142,84 +142,24 @@ class _InvestorListState extends State<InvestorList> {
                           style: TextStyle(color: Colors.grey[700]),
                         ),
                         SizedBox(height: 2),
+                        Text(  'Investor name: ${investor['Iname']}',
+
+                          style:  TextStyle(color: Colors.grey[700]),
+                        ),
+
                         SizedBox(height: 4),
                       ],
                     ),
                     trailing: TextButton(
                       onPressed: () {
-
                         // Perform action when the button is clicked
                         print('Button clicked for investor: ${investor['entityUUID']}');
                         setState(() {
-                          InvestorList.investorAssetUUID = investor['entityUUID'];
-                          InvestorList.investorUUID = investor['userUUID'];
-
+                          // Check if the values are not null before assigning
+                          InvestorList.investorAssetUUID = investor['entityUUID'] ?? '';
+                          InvestorList.investorUUID = investor['userUUID'] ?? '';
                         });
-                        Get.to(()=>const FamAgreement());
-                        // setState(() {
-                        //   showDialog(
-                        //     context: context,
-                        //     builder: (context) {
-                        //       String dropdownValue = 'Option 1';
-                        //       String contentText =
-                        //           "Paragraph 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                        //           "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
-                        //           "Paragraph 2: Ut enim ad minim veniam, quis nostrud exercitation ullamco "
-                        //           "laboris nisi ut aliquip ex ea commodo consequat. "
-                        //           "Paragraph 3: Duis aute irure dolor in reprehenderit in voluptate velit esse "
-                        //           "cillum dolore eu fugiat nulla pariatur.";
-                        //
-                        //       bool isChecked = false;
-                        //
-                        //       return AlertDialog(
-                        //         title: Text("Investor Agreement"),
-                        //         content: SingleChildScrollView(
-                        //           child: Column(
-                        //             crossAxisAlignment: CrossAxisAlignment.start,
-                        //             children: [
-                        //               Text(contentText),
-                        //               SizedBox(height: 20),
-                        //               Row(
-                        //                 children: [
-                        //                   Checkbox(
-                        //                     value: isChecked,
-                        //                     onChanged: (bool? value) {
-                        //                       setState(() {
-                        //                         isChecked = value!;
-                        //                       });
-                        //                     },
-                        //                     activeColor: isChecked ? Colors.blue: null, // Set blue color when isChecked is true, otherwise use default color
-                        //                   ),
-                        //
-                        //
-                        //                   Text('I agree to the T&C*.'),
-                        //                 ],
-                        //               ),
-                        //               SizedBox(height: 20),
-                        //             ],
-                        //           ),
-                        //         ),
-                        //         actions: <Widget>[
-                        //           TextButton(
-                        //             onPressed: () => Navigator.pop(context),
-                        //             child: Text("Cancel"),
-                        //           ),
-                        //           TextButton(
-                        //             onPressed: () {
-                        //               // Add your logic for OK button here
-                        //               print('Checkbox Value: $isChecked');
-                        //               print('Dropdown Value: $dropdownValue');
-                        //               Navigator.pop(context); // Close dialog
-                        //             },
-                        //             child: Text("OK"),
-                        //           ),
-                        //         ],
-                        //       );
-                        //     },
-                        //
-                        //   );
-                        // });
-
+                        Get.to(() => const FamAgreement());
                       },
                       style: TextButton.styleFrom(
                         backgroundColor: isSelected ? Colors.white : Colors.black,
@@ -229,6 +169,7 @@ class _InvestorListState extends State<InvestorList> {
                         style: TextStyle(color: isSelected ? Colors.black : Colors.white),
                       ),
                     ),
+
                   ),
                 );
               },
@@ -294,17 +235,28 @@ class _InvestorListState extends State<InvestorList> {
       for (var doc in querySnapshot.docs) {
         var data = doc.data() as Map<String, dynamic>;
         if (data['isCompany'] == true) {
-          investors.add({
-            'location': data['location']['address1'] ?? '',
-            'location1': data['location']['address2'] ?? '',
-            'city': data['location']['city'] ?? '',
-            'district': data['location']['district'] ?? '',
-            'state': data['location']['state'] ?? '',
-            'entity1': data['entity']['entityname'] ?? '',
-            'entity': data['entity']['entityage'] ?? '',
-            'entityUUID':doc.id,
-            'userUUID':data['userUUID'],
-          });
+          var userUUID = data['userUUID'];
+          var userSnapshot = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userUUID)
+              .get();
+
+          if (userSnapshot.exists) {
+            var userData = userSnapshot.data() as Map<String, dynamic>;
+            var farmerName = userData['fullName'] ?? '';
+            investors.add({
+              'location': data['location']['address1'] ?? '',
+              'location1': data['location']['address2'] ?? '',
+              'city': data['location']['city'] ?? '',
+              'district': data['location']['district'] ?? '',
+              'state': data['location']['state'] ?? '',
+              'Iname': farmerName,
+              'entity1': data['entity']['entityname'] ?? '',
+              'entity': data['entity']['entityage'] ?? '',
+              'userAssetUUID': doc.id,
+              'userUUID': data['userUUID'] ?? '',
+            });
+          }
         }
       }
 
@@ -313,4 +265,5 @@ class _InvestorListState extends State<InvestorList> {
       throw error;
     }
   }
+
 }
