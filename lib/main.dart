@@ -12,6 +12,8 @@ import 'package:raithamithra/pages/adminPage.dart';
 import 'package:raithamithra/pages/agreement.dart';
 import 'package:raithamithra/pages/farmerPage.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:raithamithra/pages/farmeragreement.dart';
+import 'package:raithamithra/pages/investorAgreement.dart';
 import 'package:raithamithra/pages/invetorPage.dart';
 import 'firebase_options.dart';
 
@@ -42,11 +44,12 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Ritha Mithra',
-      home: const SplashScreen(),
+       home: const SplashScreen(),
      // home: AdminHome(),
    // home: FarmerHome(),
    //    home: InvestorHome(),
    //    home: FamAgreement(),
+     // home: FarmerAgreement(),
     );
   }
 }

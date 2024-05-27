@@ -5,7 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -30,27 +29,24 @@ class _ProfilePageState extends State<ProfilePage> {
   String? fullName; // Holds the full name
   String? role; // Holds the full name
 
-
   @override
   void initState() {
     super.initState();
     getStoreDataLocalOfUser();
-
   }
-
 
   void getUserData() async {
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('phoneNumber', isEqualTo: int.parse(ProfilePage.userPhoneNumber) )
+          .where('phoneNumber', isEqualTo: int.parse(ProfilePage.userPhoneNumber))
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
         for (DocumentSnapshot doc in querySnapshot.docs) {
           setState(() {
             gotUserData = doc;
-            PhoneOTP.useUUIDLocal= gotUserData['userUUID'];
+            PhoneOTP.useUUIDLocal = gotUserData['userUUID'];
             profileUrl = doc['profileUrl'] as String?; // Retrieve profile image URL
             fullName = doc['fullName'] as String?; // Retrieve full name
             role = doc['defaultRole'] as String?; // Retrieve full name
@@ -97,14 +93,47 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-
-  Future<void> lougout() async {
-    await Hive.openBox('userData');
-    var box = Hive.box('userData');
-    await box.put('phoneNumber',  '');
-      Get.offAll(()=>const SplashScreen());
+  Future<void> logoutConfirmationDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Logout'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to log out?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              child: Text('Logout'),
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
+                // Call the logout method
+                await logout();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
+  Future<void> logout() async {
+    await Hive.openBox('userData');
+    var box = Hive.box('userData');
+    await box.put('phoneNumber', '');
+    Get.offAll(() => const SplashScreen());
+  }
 
   Future<void> getStoreDataLocalOfUser() async {
     await Hive.openBox('userData');
@@ -117,14 +146,11 @@ class _ProfilePageState extends State<ProfilePage> {
     getUserData();
   }
 
-
-
   // Function to upload image to Firebase Storage
   Future<void> uploadImage(File imageFile) async {
     try {
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      firebase_storage.Reference ref =
-      firebase_storage.FirebaseStorage.instance.ref().child('profilePic/$fileName');
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance.ref().child('profilePic/$fileName');
       await ref.putFile(imageFile);
       String imageUrl = await ref.getDownloadURL();
       setState(() {
@@ -135,7 +161,6 @@ class _ProfilePageState extends State<ProfilePage> {
       print('Error uploading image: $error');
     }
   }
-
 
   // Function to update profile image URL in Firestore
   Future<void> updateProfileImageUrl(String imageUrl) async {
@@ -210,7 +235,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-
               SizedBox(height: 10),
               Text(
                 role ?? 'Loading...', // Display the full name or 'Loading...' if not fetched yet
@@ -223,10 +247,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                          builder: (context) => AboutUs()),);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => AboutUs()));
                     },
                     child: Column(
                       children: [
@@ -237,10 +258,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => SettingsPage()),);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
                     },
                     child: Column(
                       children: [
@@ -252,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   GestureDetector(
                     onTap: () async {
                       // Implement logout functionality here
-                      await lougout();
+                      await logoutConfirmationDialog();
                     },
                     child: Column(
                       children: [

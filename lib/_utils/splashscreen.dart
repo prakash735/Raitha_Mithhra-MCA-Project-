@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> getStoreDataLocalOfUser() async {
     await Hive.openBox('userData');
     var box = Hive.box('userData');
-    await box.put('phoneNumber',  '');
+    // await box.put('phoneNumber',  '');
     var phoneNumber = box.get('phoneNumber');
     setState(() {
       PhoneOTP.userPhoneNumber = phoneNumber;

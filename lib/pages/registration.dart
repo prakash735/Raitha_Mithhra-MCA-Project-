@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:hive/hive.dart';
 import 'package:raithamithra/pages/farmerPage.dart';
+// Import InvestorPage
+import 'package:raithamithra/pages/invetorPage.dart';
 import 'package:uuid/uuid.dart';
 
 class RegPage extends StatefulWidget {
@@ -185,10 +187,6 @@ class _RegPageState extends State<RegPage> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           register();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => FarmerHome()), // Navigate to FarmerPage and replace current route
-                          );
                         } else {
                           _scrollToFirstError();
                         }
@@ -217,7 +215,7 @@ class _RegPageState extends State<RegPage> {
     String emailID = emailController.text.isEmpty ? '' : emailController.text;
     String phoneNumber = phoneNumberController.text;
     String defaultRole = _defaultRole ?? '';
-    int adharnumber = int.parse(adharNumberController.text);
+    int adharnumber = int.tryParse(adharNumberController.text) ?? 0;
     var uuid = Uuid();
     var docID = uuid.v4();
     // Store the registration data in Firestore
@@ -226,26 +224,40 @@ class _RegPageState extends State<RegPage> {
       'emailID': emailID,
       'phoneNumber': int.tryParse(phoneNumber),
       'defaultRole': defaultRole,
-      'adharnumber':adharnumber,
-      'userUUID':docID,
-      'profileUrl':'https://firebasestorage.googleapis.com/v0/b/raitha-mithra-e2eed.appspot.com/o/profilePic%2Fuser.jpeg?alt=media&token=c814973f-42b8-4cb9-9b71-eaf589c36a25'
+      'adharnumber': adharnumber,
+      'userUUID': docID,
+      'profileUrl':
+      'https://firebasestorage.googleapis.com/v0/b/raitha-mithra-e2eed.appspot.com/o/profilePic%2Fuser.jpeg?alt=media&token=c814973f-42b8-4cb9-9b71-eaf589c36a25'
     }).then((value) async {
       // Data added successfully
       await storeData();
       print('Registration data added to Firestore');
+
+      // Navigate based on selected role
+      if (_defaultRole == 'farmer') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => FarmerHome()), // Navigate to FarmerPage and replace current route
+        );
+      } else if (_defaultRole == 'investor') {
+        // Navigate to InvestorHome
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => InvestorHome()), // Navigate to InvestorHome and replace current route
+        );
+      }
     }).catchError((error) {
       // Error occurred while adding data
       print('Error adding registration data: $error');
-      const SnackBar(content: Text('Something Went wrong'));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Something Went wrong')));
     });
   }
-
 
   storeData() async {
     await Hive.openBox('userData');
     var box = Hive.box('userData');
-    await box.put('phoneNumber',  phoneNumberController.text);
-    Get.offAll(()=>const FarmerHome());
+    await box.put('phoneNumber', phoneNumberController.text);
+    // Get.offAll(()=>const FarmerHome());
   }
 
   void _scrollToFirstError() {
